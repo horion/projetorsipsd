@@ -8,31 +8,65 @@ auth=HTTPBasicAuth()
 
 
 
-#atencao:
-#elephant=elefante
-#mouse=rato
-#turtle=tartaruga
-#dragonfly=libelula
-#xita=guepardo
-#conch=caramujo
-
-#lista simulando fluxos para testes
 pkts = [
-        {'id': 1, 'protocolo': "http", 'duracao':"turtle", 'tamanho': "elephant", 'taxa': "conch"},
-        {'id': 2, 'protocolo': "ssh", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
-        {'id': 3, 'protocolo': "dhcp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
-        {'id': 4, 'protocolo': "torrent", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
-        {'id': 5, 'protocolo': "ssdp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
-        {'id': 6, 'protocolo': "ssh", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
-        {'id': 7, 'protocolo': "ssl", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
-        {'id': 8, 'protocolo': "dhcp", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
-        {'id': 9, 'protocolo': "ssdp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
-        {'id': 10, 'protocolo': "dhcp", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
-        {'id': 11, 'protocolo': "http", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "conch"},
+        {'id': 1, 
+         'protocolo': "http", 
+         'duracao':"turtle", 
+         'tamanho': "elephant", 
+         'taxa': "conch"},
+        {'id': 2, 
+         'protocolo': "ssh", 
+         'duracao': "dragonfly", 
+         'tamanho': "mouse", 
+         'taxa': "xita"},
+        {'id': 3, 
+         'protocolo': "dhcp", 
+         'duracao': "turtle", 
+         'tamanho': "elephant", 
+         'taxa': "conch"},
+        {'id': 4, 
+         'protocolo': "torrent", 
+         'duracao': "dragonfly", 
+         'tamanho': "mouse", 
+         'taxa': "xita"},
+        {'id': 5, 
+         'protocolo': "ssdp", 
+         'duracao': "turtle", 
+         'tamanho': "elephant", 
+         'taxa': "conch"},
+        {'id': 6, 
+         'protocolo': "ssh", 
+         'duracao': "dragonfly",
+         'tamanho': "mouse", 
+         'taxa': "xita"},
+        {'id': 7, 
+         'protocolo': "ssl", 
+         'duracao': "turtle", 
+         'tamanho': "elephant", 
+         'taxa': "conch"},
+        {'id': 8, 
+         'protocolo': "dhcp", 
+         'duracao': "dragonfly", 
+         'tamanho': "mouse", 
+         'taxa': "xita"},
+        {'id': 9, 
+         'protocolo': "ssdp", 
+         'duracao': "turtle", 
+         'tamanho': "elephant",
+         'taxa': "conch"},
+        {'id': 10, 
+         'protocolo': "dhcp", 
+         'duracao': "dragonfly",
+         'tamanho': "mouse", 
+         'taxa': "xita"},
+        {'id': 11,
+         'protocolo': "http", 
+         'duracao': "dragonfly",
+         'tamanho': "mouse",
+         'taxa': "conch"},
         ]
 
 
-#autenticacao no rest
 @auth.get_password
 def get_password(username):
     if username=='admin':
@@ -52,8 +86,6 @@ def bad_request(error):
 
 @auth.error_handler
 def unauthorized():
-    # return 403 instead of 401 to prevent browsers from displaying the default
-    # auth dialog
     return make_response(jsonify({'error': 'Unauthorized access'}), 403)
 
 
@@ -66,10 +98,9 @@ def not_found(error):
 
 
 
-#retorna a porcentagem de tartarugas e libélulas e elefantes de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/duracao', methods=['GET'])
 @auth.login_required
-def get_duracao(protocolo):
+def pegaDuracao(protocolo):
     count_turtle=0
     count_dragonfly=0
     duracaoPkts=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
@@ -80,20 +111,15 @@ def get_duracao(protocolo):
             count_turtle+=1
         if pkt['duracao']== 'dragonfly':
             count_dragonfly += 1
-    return jsonify({'%s por duracao' % protocolo.upper():
-        [{'Quantidade Tartarugas':count_turtle}, {'Quantidade Libelulas':count_dragonfly},
-        {'Pocentagem Tartarugas':float(100*count_turtle/(count_turtle+count_dragonfly))},
-        {'Pocentagem Libelulas':float(100*count_dragonfly/(count_turtle+count_dragonfly))}]})
+    return retornaDuracao(count_dragonfly, count_turtle, protocolo)
 
 
 
 
 
-
-#retorna a porcentagem de ratos e elefantes de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/tamanho', methods=['GET'])
 @auth.login_required
-def get_tamanho(protocolo):
+def pegaTamanho(protocolo):
     count_elephant=0
     count_mouse=0
     tamanhoPkts=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
@@ -104,18 +130,12 @@ def get_tamanho(protocolo):
             count_elephant += 1
         if pkt['tamanho']== 'mouse':
             count_mouse += 1
-    return jsonify({'%s por tamanho' % protocolo.upper():
-        [{'Quantidade Elefantes':count_elephant}, {'Quantidade Ratos':count_mouse},
-        {'Pocentagem Elefantes':float(100*count_elephant/(count_elephant+count_mouse))},
-        {'Pocentagem Ratos':float(100*count_mouse/(count_elephant+count_mouse))}]})
+    return retornaTamanho(count_elephant, count_mouse, protocolo)
 
 
 
 
 
-
-
-#retorna a porcentagem de guepardos e caramujos de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/taxa', methods=['GET'])
 @auth.login_required
 def get_taxa(protocolo):
@@ -129,16 +149,11 @@ def get_taxa(protocolo):
             count_xita += 1
         if pkt['taxa']== 'conch':
             count_conch += 1
-    return jsonify({'%s por taxa' % protocolo.upper():
-        [{'Quantidade Guepardos':count_xita}, {'Quantidade Caramujos':count_conch},
-        {'Pocentagem Guepardos':float(100*count_xita/(count_xita+count_conch))},
-        {'Pocentagem Caramujos':float(100*count_conch/(count_xita+count_conch))}]})
+    return retornaTaxas(count_conch, count_xita, protocolo)
 
 
 
 
-
-#retorna a porcentagem dos protocolos que são [animal]
 @app.route('/rest/api/<string:animal>', methods=['GET'])
 @auth.login_required
 def get_animal(animal):
@@ -164,22 +179,51 @@ def get_animal(animal):
             count_ssh += 1
         if pkt['protocolo']=='ssl':
             count_ssl += 1
+    return retornaPorcentoAnimal(animal, count_dhcp, count_http, count_ssdp, count_ssh, count_ssl, count_torrent)
+
+
+
+
+def retornaPorcentoAnimal(animal, count_dhcp, count_http, count_ssdp, count_ssh, count_ssl, count_torrent):
     return jsonify({'%s por protocolo' % animal.upper():
-            [
-                {'Quantidade torrent':count_torrent}, {'Quantidade dhcp':count_dhcp},
-                {'Quantidade http':count_http}, {'Quantidade ssdp':count_ssdp}, {'Quantidade ssh':count_ssh}, {'Quantidaded ssl':count_ssl},
-                {'Pocentagem torrent':float(100*count_torrent/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))},
-                {'Pocentagem dhcp':float(100*count_dhcp/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))},
-                {'Pocentagem http':float(100*count_http/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))},
-                {'Pocentagem ssdp':float(100*count_ssdp/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))},
-                {'Pocentagem ssh':float(100*count_ssh/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))},
-                {'Pocentagem ssl':float(100*count_ssl/(count_torrent+count_dhcp+count_http+count_ssdp+count_ssh+count_ssl))}
-            ]
-        })
+        [
+            {'Quantidade torrent': count_torrent}, {'Quantidade dhcp': count_dhcp},
+            {'Quantidade http': count_http}, {'Quantidade ssdp': count_ssdp}, {'Quantidade ssh': count_ssh},
+            {'Quantidaded ssl': count_ssl},
+            {'Pocentagem torrent': float(
+                100 * count_torrent / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))},
+            {'Pocentagem dhcp': float(
+                100 * count_dhcp / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))},
+            {'Pocentagem http': float(
+                100 * count_http / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))},
+            {'Pocentagem ssdp': float(
+                100 * count_ssdp / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))},
+            {'Pocentagem ssh': float(
+                100 * count_ssh / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))},
+            {'Pocentagem ssl': float(
+                100 * count_ssl / (count_torrent + count_dhcp + count_http + count_ssdp + count_ssh + count_ssl))}
+        ]
+    })
 
 
+def retornaDuracao(count_dragonfly, count_turtle, protocolo):
+    return jsonify({'%s por duracao' % protocolo.upper():
+                        [{'Quantidade Tartarugas': count_turtle}, {'Quantidade Libelulas': count_dragonfly},
+                         {'Pocentagem Tartarugas': float(100 * count_turtle / (count_turtle + count_dragonfly))},
+                         {'Pocentagem Libelulas': float(100 * count_dragonfly / (count_turtle + count_dragonfly))}]})
 
 
+def retornaTaxas(count_conch, count_xita, protocolo):
+    return jsonify({'%s por taxa' % protocolo.upper():
+                        [{'Quantidade Guepardos': count_xita}, {'Quantidade Caramujos': count_conch},
+                         {'Pocentagem Guepardos': float(100 * count_xita / (count_xita + count_conch))},
+                         {'Pocentagem Caramujos': float(100 * count_conch / (count_xita + count_conch))}]})
+
+def retornaTamanho(count_elephant, count_mouse, protocolo):
+    return jsonify({'%s por tamanho' % protocolo.upper():
+                        [{'Quantidade Elefantes': count_elephant}, {'Quantidade Ratos': count_mouse},
+                         {'Pocentagem Elefantes': float(100 * count_elephant / (count_elephant + count_mouse))},
+                         {'Pocentagem Ratos': float(100 * count_mouse / (count_elephant + count_mouse))}]})
 
 
 def make_public_pkt(pkt):
