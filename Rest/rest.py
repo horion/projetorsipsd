@@ -10,23 +10,25 @@ auth=HTTPBasicAuth()
 
 #atencao:
 #elephant=elefante
-#mouse=rato/
+#mouse=rato
 #turtle=tartaruga
 #dragonfly=libelula
 #xita=guepardo
 #conch=caramujo
+
+#lista simulando fluxos para testes
 pkts = [
-        {'id': 1, 'protocolo': "http", 'tamanho': "elephant", 'duracao': "turtle", 'taxa': "conch"},
-        {'id': 2, 'protocolo': "ssh", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "xita"},
-        {'id': 3, 'protocolo': "dhcp", 'tamanho': "elephant", 'duracao': "turtle", 'taxa': "conch"},
-        {'id': 4, 'protocolo': "torrent", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "xita"},
-        {'id': 5, 'protocolo': "ssdp", 'tamanho': "elephant", 'duracao': "turtle", 'taxa': "conch"},
-        {'id': 6, 'protocolo': "ssh", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "xita"},
-        {'id': 7, 'protocolo': "ssl", 'tamanho': "elephant", 'duracao': "turtle", 'taxa': "conch"},
-        {'id': 8, 'protocolo': "dhcp", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "xita"},
-        {'id': 9, 'protocolo': "ssdp", 'tamanho': "elephant", 'duracao': "turtle", 'taxa': "conch"},
-        {'id': 10, 'protocolo': "dhcp", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "xita"},
-        {'id': 11, 'protocolo': "http", 'tamanho': "mouse", 'duracao': "dragonfly", 'taxa': "conch"},
+        {'id': 1, 'protocolo': "http", 'duracao':"turtle", 'tamanho': "elephant", 'taxa': "conch"},
+        {'id': 2, 'protocolo': "ssh", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
+        {'id': 3, 'protocolo': "dhcp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
+        {'id': 4, 'protocolo': "torrent", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
+        {'id': 5, 'protocolo': "ssdp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
+        {'id': 6, 'protocolo': "ssh", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
+        {'id': 7, 'protocolo': "ssl", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
+        {'id': 8, 'protocolo': "dhcp", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
+        {'id': 9, 'protocolo': "ssdp", 'duracao': "turtle", 'tamanho': "elephant", 'taxa': "conch"},
+        {'id': 10, 'protocolo': "dhcp", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "xita"},
+        {'id': 11, 'protocolo': "http", 'duracao': "dragonfly", 'tamanho': "mouse", 'taxa': "conch"},
         ]
 
 
@@ -64,38 +66,16 @@ def not_found(error):
 
 
 
-
-
-@app.route('/rest/api/pkts', methods=['GET'])
-@auth.login_required
-def get_pkts():
-    return jsonify({'pkts': [make_public_pkt(pkt) for pkt in pkts]})
-
-
-
-
-
-@app.route('/rest/api/pkts/<int:pkt_id>', methods=['GET'])
-@auth.login_required
-def get_pkt(pkt_id):
-    pkt=[pkt for pkt in pkts if pkt['id']==pkt_id]
-    if len(pkt)==0:
-        abort(404)
-    return jsonify({'pkt': make_public_pkt(pkt[0])})
-
-
-
-
-
+#retorna a porcentagem de tartarugas e libélulas e elefantes de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/duracao', methods=['GET'])
 @auth.login_required
-def get_pkts_duracao(protocolo):
+def get_duracao(protocolo):
     count_turtle=0
     count_dragonfly=0
-    pkts_duracao=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
-    if len(pkts_duracao)==0:
+    duracaoPkts=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
+    if len(duracaoPkts)==0:
         abort(404)
-    for pkt in pkts_duracao:
+    for pkt in duracaoPkts:
         if pkt['duracao']=='turtle':
             count_turtle+=1
         if pkt['duracao']== 'dragonfly':
@@ -110,16 +90,16 @@ def get_pkts_duracao(protocolo):
 
 
 
-
+#retorna a porcentagem de ratos e elefantes de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/tamanho', methods=['GET'])
 @auth.login_required
-def get_pkts_tamanho(protocolo):
-    count_elephant = 0
-    count_mouse = 0
-    pkts_tamanho = [pkt for pkt in pkts if pkt['protocolo'] == protocolo]
-    if len(pkts_tamanho) == 0:
+def get_tamanho(protocolo):
+    count_elephant=0
+    count_mouse=0
+    tamanhoPkts=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
+    if len(tamanhoPkts) == 0:
         abort(404)
-    for pkt in pkts_tamanho:
+    for pkt in tamanhoPkts:
         if pkt['tamanho']== 'elephant':
             count_elephant += 1
         if pkt['tamanho']== 'mouse':
@@ -135,16 +115,16 @@ def get_pkts_tamanho(protocolo):
 
 
 
-
+#retorna a porcentagem de guepardos e caramujos de um [protocolo]
 @app.route('/rest/api/<string:protocolo>/taxa', methods=['GET'])
 @auth.login_required
-def get_pkts_taxa(protocolo):
-    count_xita = 0
-    count_conch = 0
-    pkts_taxas = [pkt for pkt in pkts if pkt['protocolo'] == protocolo]
-    if len(pkts_taxas) == 0:
+def get_taxa(protocolo):
+    count_xita=0
+    count_conch=0
+    taxaPkts=[pkt for pkt in pkts if pkt['protocolo'] == protocolo]
+    if len(taxaPkts) == 0:
         abort(404)
-    for pkt in pkts_taxas:
+    for pkt in taxaPkts:
         if pkt['taxa']== 'xita':
             count_xita += 1
         if pkt['taxa']== 'conch':
@@ -158,7 +138,7 @@ def get_pkts_taxa(protocolo):
 
 
 
-
+#retorna a porcentagem dos protocolos que são [animal]
 @app.route('/rest/api/<string:animal>', methods=['GET'])
 @auth.login_required
 def get_animal(animal):
@@ -172,17 +152,17 @@ def get_animal(animal):
     if len(pkts_animal) == 0:
         abort(404)
     for pkt in pkts_animal:
-        if pkt['protocolo']== 'torrent':
+        if pkt['protocolo']=='torrent':
             count_torrent += 1
-        if pkt['protocolo']== 'dhcp':
+        if pkt['protocolo']=='dhcp':
             count_dhcp += 1
-        if pkt['protocolo']== 'http':
+        if pkt['protocolo']=='http':
             count_http += 1
-        if pkt['protocolo']== 'ssdp':
+        if pkt['protocolo']=='ssdp':
             count_ssdp += 1
-        if pkt['protocolo']== 'ssh':
+        if pkt['protocolo']=='ssh':
             count_ssh += 1
-        if pkt['protocolo']== 'ssl':
+        if pkt['protocolo']=='ssl':
             count_ssl += 1
     return jsonify({'%s por protocolo' % animal.upper():
             [
