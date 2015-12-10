@@ -38,7 +38,7 @@ public class enviar {
 	private String tamanho = new String();
 	private String taxa = new String();
 
-	private String hostname = "192.168.56.102";
+	private String hostname = "192.168.1.101";
 	private int portNumber = 5672;
 	private String virtualHost = "classificadas";
 	private String username = "luiz";
@@ -49,7 +49,7 @@ public class enviar {
 	String duracaoClassificado;
 	String taxaClassificado;
 	
-	private static File arquivo = new File("/home/mininet/aluizio/rsi-psd/sequence.txt");
+	private static File arquivo = new File("/home/mininet/sequence.txt");
 	Long sequence = new Long(0);
 
 	public void enviarTupla(String message) throws java.io.IOException {
@@ -103,18 +103,18 @@ public class enviar {
 			Double taxaLong = Double.parseDouble(taxa);
 			
 
-			if (tamanho.equalsIgnoreCase(QUEUE_ELEFANTE)) {
+			if (tamanhoLong > PARAMETRO_TAMANHO) {
 				setTamanhoClassificado(QUEUE_ELEFANTE);
 			} else {
 				setTamanhoClassificado(QUEUE_RATO);
 			}
 
-			if (duracao.equalsIgnoreCase(QUEUE_TARTARUGA)) {
+			if (duracaoLong/60 > PARAMETRO_DURACAO) {
 				setDuracaoClassificado(QUEUE_TARTARUGA);
 			} else {
 				setDuracaoClassificado(QUEUE_LIBELULA);
 			}
-			if (taxa.equalsIgnoreCase(QUEUE_GUEPARDO)) {
+			if (taxaLong/1000 > PARAMETRO_TAXA) {
 				setTaxaClassificado(QUEUE_GUEPARDO);
 			} else {
 				setTaxaClassificado(QUEUE_CARAMUJO);
@@ -200,7 +200,7 @@ public class enviar {
 		
 	}
 	public void persistirUltimaSequence(Long lastSequence) throws IOException{
-		arquivo = new File("/home/mininet/aluizio/rsi-psd/sequence.txt");
+		arquivo = new File("/home/mininet/sequence.txt");
 		arquivo.createNewFile();
 		FileWriter writer = new FileWriter(arquivo);
 		BufferedWriter bw = new BufferedWriter(writer);
@@ -210,7 +210,7 @@ public class enviar {
 	}
 	public Long obterSequence(Long sequence) throws IOException{
 		if(arquivo.exists()){
-			FileReader reader = new FileReader("/home/mininet/aluizio/rsi-psd/sequence.txt");
+			FileReader reader = new FileReader("/home/mininet/sequence.txt");
 			BufferedReader leitor = new BufferedReader(reader);
 			String linha = null;
 			linha = leitor.readLine();

@@ -15,7 +15,7 @@ public class SparkStreaming {
 	public static void main(String[] args) throws IOException {
 		 Duration batchInterval = new Duration(2000);
 			
-		 ssc = new JavaStreamingContext("spark://192.168.1.115:7077", "CustomReceiver", batchInterval,System.getenv("SPARK_HOME"),
+		 ssc = new JavaStreamingContext("spark://192.168.56.103:7077", "CustomReceiver", batchInterval,System.getenv("SPARK_HOME"),
 	            JavaStreamingContext.jarOfClass(SparkStreaming.class));
 		
 		JavaDStream<String> CSR = ssc.receiverStream(new CustomReceiver());
